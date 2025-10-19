@@ -79,14 +79,18 @@
 
     }
 
-    function sessionDropdown(student, session){
+    function sessionDropdown(student, sessionTime){
         let dropdown = document.createElement("select");
         for (let session of sessionsList){
             const option = document.createElement("option");
             option.textContent = session['sessionName'];
-            
+            option.value = student + '@' + session['sessionName'] + '@' + sessionTime;
             dropdown.appendChild(option);
         }
+        dropdown.addEventListener("change", function(){
+            console.log(this.value);
+            sendRequest("/", "updateStudentSession", this.value);
+        })
         return dropdown;
     }
 

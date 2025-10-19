@@ -47,6 +47,18 @@ async def handlePost(request):
         rData['item'] = 'sessions'
         rData['status'] = SesDB.getAll()
 
+
+    if data['action'] == 'updateStudentSession':
+        # register device with the base station
+        info = data['value'].split("@")
+        student = info[0]
+        session = info[1]
+        dayTime = info[2]
+
+        
+        rData['item'] = 'updateStudentSession'
+        rData['status'] = StuDB.updateStudentSession(student, session, dayTime)
+
     response = json.dumps(rData)
     print("Response: ", response)
     return web.Response(text=response, content_type='text/html')

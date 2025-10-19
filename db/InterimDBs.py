@@ -42,6 +42,27 @@ class studentDB:
 
     def getStudents(self):
         return self.db.all()
+    
+    def updateStudentSession(self, student, session, dayTime):
+        Stu = Query()
+        
+        info = self.getStudent(student)[0]
+        print("info:", info)
+        ses = info["sessions"]
+        ses[dayTime] = session
+
+        id = self.db.upsert({
+            'sessions': ses
+
+        }, Stu.studentName == student)
+
+        return id
+    
+    def getStudent(self, student):
+        Stu = Query()
+        info = self.db.search(Stu.studentName == student)
+        print(info)
+        return info
 
 
 
