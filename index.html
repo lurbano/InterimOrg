@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interim Planner</title>
+    <style>
+        #studentArea {
+            display: grid;
+            grid-template-columns: 200px repeat(5, 200px);
+        }
+    </style>
+</head>
+<body>
+    Interim Plans
+    <div id="headArea"></div>
+
+    <div id ="studentArea"></div>
+
+</body>
+
+<script>
+
+
+    window.addEventListener("load", (event) => {
+        //sendRequest("/", "getSessions", "all" );
+        sendRequest("/", "showStudents", "all" );
+    });
+
+    studentIndex = 1;
+    sessionsList = [];
+
+    function addStudentToList(student, divID="studentArea"){
+        let div = document.getElementById(divID);
+        studentIndex += 2;
+        console.log("studentIndex", studentIndex);
+
+        sdiv = document.createElement("span");
+        sdiv.innerHTML = student["studentName"];
+        sdiv.style.gridRow = studentIndex;
+        sdiv.style.gridColumn = 1;
+
+        for (const session in student['sessions']){
+            dayTime = session.split("_");
+            let i = dayTime[1] === "AM" ? 0 : 1;
+            let j = 0;
+            
+            switch (dayTime[0]) {
+                case "Monday":
+                    j = 1;
+                    break;
+                case "Tuesday":
+                    j = 2;
+                    break;
+                case "Wednesday":
+                    j = 3;
+                    break;
+                case "Thursday":
+                    j = 4;
+                    break;
+                case "Friday":
+                    j = 5;
+                    break;
+                default:
+                    j = 0;
+            }
+            ddiv = document.createElement("span");
+            //ddiv.innerHTML = session;
+            ddiv.appendChild(sessionDropdown(student['studentName'], session));
+            ddiv.style.gridRow = studentIndex+i;
+            ddiv.style.gridColumn = j+1;
+            console.log(session, i, j+1);
+
+            div.append(ddiv);
+        }
+
+
+        div.append(sdiv);
+
+    }
+
+    function sessionDropdown(student, session){
+        let dropdown = document.createElement("select");
+        for (let session of sessionsList){
+            const option = document.createElement("option");
+            option.textContent = session['sessionName'];
+            
+            dropdown.appendChild(option);
+        }
+        return dropdown;
+    }
+
+    function sendRequest(target, action, value="") {
+        console.log("making request")
+        let xR = new XMLHttpRequest();
+        xR.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                
+                console.log("Server Response:", this.responseText);
+                data = JSON.parse(this.responseText);
+                console.log("data:", data);
+                console.log("data['item']:", data["item"]);
+                
+                //Handle responses
+                if (data["item"] == "time") {
+                    console.log("Got the time: ", data["status"]);
+                    timeSlot.innerText = data["status"];
+                }
+                if (data["item"] == "photoResistor") {
+                    console.log("Light Level: ", data["status"]);
+                    MkspPhotoResistor.innerText = data["status"];
+                }
+                if (data["item"] == "students") {
+                    // deviceTable.innerHTML = data['status'];
+                    for (student of data["status"]){
+                        console.log(student["studentName"]);
+                        addStudentToList(student);
+                    }
+                }
+
+                if (data["item"] == "everything") {
+                    // deviceTable.innerHTML = data['status'];
+                    sessionsList = data['status']['sessions'];
+                    for (student of data["status"]['students']){
+                        console.log(student["studentName"]);
+                        addStudentToList(student);
+                    }
+                }
+            }
+        }
+        let data = {};
+        data["action"] = action;
+        data["value"] = value;
+        console.log("data:", data);
+        xR.open("POST", target, true);
+        xR.send(JSON.stringify(data));
+    }
+
+
+</script>
+</html>
