@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interim Planner</title>
+    <style>
+        #studentArea {
+            display: grid;
+            grid-template-columns: 200px repeat(5, 200px);
+        }
+    </style>
+</head>
+<body>
+    Interim Plans
+    <div id="headArea"></div>
+
+    <div id ="facultyArea"></div>
+
+    <div id = "sessionsArea">
+        Session Name: <input type="text"  id="sessionName"><br>
+        Faculty: <input type="text"  id="sessionFaculty"><br>
+        Student Lead: <input type="text" id="sessionStudentLead">
+        Location: <input type="text" id="sessionLocation">
+        <input type="button" id="addSession" value="Add Session">
+    </div>
+
+</body>
+
+<script>
+
+
+    window.addEventListener("load", (event) => {
+        //sendRequest("/", "getSessions", "all" );
+        sendRequest("/", "collateSessions", "all" );
+        addSessionButton();
+    });
+
+    studentIndex = 1;
+    sessionsList = [];
+
+        function addSessionButton(){
+        let div = document.getElementById('addSession');
+        let data = {
+            "sessionName": document.getElementById("sessionName").value,
+            "sessionFaculty": document.getElementById("sessionFaculty").value,
+            "sessionStudentLead": document.getElementById("sessionStudentLead").value,
+            "sessionLocation": document.getElementById("sessionLocation").value
+        };
+        div.addEventListener("click", function(){
+            console.log("clicked");
+            sendRequest("/", "addSession", data);
+        })
+    }
+
+    
+
+
+
+    function sendRequest(target, action, value="") {
+        console.log("making request")
+        let xR = new XMLHttpRequest();
+        xR.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                
+                console.log("Server Response:", this.responseText);
+                data = JSON.parse(this.responseText);
+                console.log("data:", data);
+                console.log("data['item']:", data["item"]);
+                
+                //Handle responses
+                if (data["item"] == "time") {
+                    console.log("Got the time: ", data["status"]);
+                    timeSlot.innerText = data["status"];
+                }
+                
+                if (data["item"] == "students") {
+                    // deviceTable.innerHTML = data['status'];
+                    for (student of data["status"]){
+                        console.log(student["studentName"]);
+                        addStudentToList(student);
+                    }
+                }
+
+                if (data["item"] == "assignments") {
+                    // deviceTable.innerHTML = data['status'];
+                    console.log("data[status]:", data["status"]);
+                    console.log("isArray", Array.isArray(data["status"]))
+                    for (session in data["status"]){
+                        let studentList = data["status"][session]
+                        if (studentList.length > 0) {
+                            console.log(session, studentList);
+                        }
+                        
+                    }
+                }
+
+                if (data["item"] == "everything") {
+                    // deviceTable.innerHTML = data['status'];
+                    sessionsList = data['status']['sessions'];
+                    for (student of data["status"]['students']){
+                        console.log(student["studentName"]);
+                        addStudentToList(student);
+                    }
+                }
+            }
+        }
+        let data = {};
+        data["action"] = action;
+        data["value"] = value;
+        console.log("data:", data);
+        xR.open("POST", target, true);
+        xR.send(JSON.stringify(data));
+    }
+
+
+</script>
+</html>

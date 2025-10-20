@@ -9,13 +9,20 @@ from uAio import *
 # database
 from db.InterimDBs import studentDB
 from db.InterimDBs import sessionDB
+from db.InterimDBs import sessionCollator
 StuDB = studentDB()
 SesDB = sessionDB()
+collator = sessionCollator()
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 async def handle(request):
     with open(dir_path+"/"+"index.html", "r") as f:
+        html_content = f.read()
+    return web.Response(text=html_content, content_type='text/html')
+
+async def handleFaculty(request):
+    with open(dir_path+"/"+"faculty.html", "r") as f:
         html_content = f.read()
     return web.Response(text=html_content, content_type='text/html')
 
@@ -45,6 +52,14 @@ async def handlePost(request):
         rData['item'] = 'sessions'
         rData['status'] = SesDB.getAll()
 
+    if data['action'] == 'collateSessions':
+        info = data['value']
+        
+        
+        rData['item'] = 'assignments'
+        rData['status'] = collator.collate()
+
+
     if data['action'] == 'addSession':
         info = data['value']
         print("info:", info)
@@ -72,6 +87,7 @@ async def handlePost(request):
 async def main():
     app = web.Application()
     app.router.add_get('/', handle)
+    app.router.add_get('/faculty', handleFaculty)
     app.router.add_post("/", handlePost)
 
     # Serve static files from the "static" directory

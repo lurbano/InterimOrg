@@ -90,6 +90,47 @@ class sessionDB:
 
     def getAll(self):
         return self.db.all()
+    
+    def close(self):
+        self.db.close()
+
+
+class sessionCollator:
+    def __init__(self):
+        print("student db:", db_path+'/students.json')
+        s = studentDB()
+        self.students = s.getStudents()
+        s = sessionDB()
+        self.sessions = s.getAll()
+
+    def collate(self):
+
+        dayTimes = ["Monday_AM", "Monday_PM", "Tuesday_AM", "Tuesday_PM", "Wednesday_AM", "Wednesday_PM", "Thursday_AM", "Thursday_PM", "Friday_AM", "Friday_PM"]
+
+        print("students", self.students)
+        print()
+        print("sessions", self.sessions)
+
+        assignments = {}
+
+        
+        for session in self.sessions:
+            sesTime = session['sessionName'] + "@"
+            for dayTime in dayTimes:
+                sesTime = session['sessionName'] + "@" + dayTime
+                assignments[sesTime] = []
+                for student in self.students:
+                    if student["sessions"][dayTime] == session['sessionName']:
+                        assignments[sesTime].append(student['studentName'])
+
+        print()
+        print("assignments:")
+        for assignment in assignments:
+            print(assignment, assignments[assignment])
+
+        return assignments
+
+
 
 
 
