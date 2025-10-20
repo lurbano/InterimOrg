@@ -32,7 +32,6 @@ async def handlePost(request):
         rData['status'] = now.ctime() # a string representing the current time
 
     if data['action'] == 'showStudents':
-        # register device with the base station
         info = data['value']
         
         everything = { "students": StuDB.getStudents(), "sessions": SesDB.getAll()}
@@ -41,15 +40,22 @@ async def handlePost(request):
         rData['status'] = everything
 
     if data['action'] == 'getSessions':
-        # register device with the base station
         info = data['value']
         
         rData['item'] = 'sessions'
         rData['status'] = SesDB.getAll()
 
+    if data['action'] == 'addSession':
+        info = data['value']
+        print("info:", info)
+
+        SesDB.add_session(info['sessionName'], info['sessionFaculty'], info['sessionStudentLead'], info['sessionLocation'])
+        
+        rData['item'] = 'addSession'
+        rData['status'] = 'Added Session'
+
 
     if data['action'] == 'updateStudentSession':
-        # register device with the base station
         info = data['value'].split("@")
         student = info[0]
         session = info[1]

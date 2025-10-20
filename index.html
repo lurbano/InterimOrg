@@ -17,6 +17,14 @@
 
     <div id ="studentArea"></div>
 
+    <div id = "sessionsArea">
+        Session Name: <input type="text"  id="sessionName"><br>
+        Faculty: <input type="text"  id="sessionFaculty"><br>
+        Student Lead: <input type="text" id="sessionStudentLead">
+        Location: <input type="text" id="sessionLocation">
+        <input type="button" id="addSession" value="Add Session">
+    </div>
+
 </body>
 
 <script>
@@ -25,10 +33,25 @@
     window.addEventListener("load", (event) => {
         //sendRequest("/", "getSessions", "all" );
         sendRequest("/", "showStudents", "all" );
+        addSessionButton();
     });
 
     studentIndex = 1;
     sessionsList = [];
+
+        function addSessionButton(){
+        let div = document.getElementById('addSession');
+        let data = {
+            "sessionName": document.getElementById("sessionName").value,
+            "sessionFaculty": document.getElementById("sessionFaculty").value,
+            "sessionStudentLead": document.getElementById("sessionStudentLead").value,
+            "sessionLocation": document.getElementById("sessionLocation").value
+        };
+        div.addEventListener("click", function(){
+            console.log("clicked");
+            sendRequest("/", "addSession", data);
+        })
+    }
 
     function addStudentToList(student, divID="studentArea"){
         let div = document.getElementById(divID);
@@ -87,6 +110,10 @@
             }
             //ddiv.innerHTML = session;
             ddiv.appendChild(sessionDropdown(student['studentName'], session, chosenSession));
+
+            // info
+            ddiv.appendChild(infoTip(chosenSession));
+            
             ddiv.style.gridRow = studentIndex+i;
             ddiv.style.gridColumn = j+1;
             console.log(session, i, j+1, chosenSession);
@@ -99,16 +126,39 @@
 
     }
 
+    function infoTip(sessionName){
+        info = document.createElement('span');
+        info.innerHTML = 'i';
+        for (let session of sessionsList){
+            if (session['sessionName'] === sessionName) {
+                info.title = `${session['faculty']}, ${session['studentLead']}, ${session['location']}`;
+            }
+        }
+        
+        return info;
+    }
+
     function sessionDropdown(student, sessionTime, chosenSession){
         let dropdown = document.createElement("select");
+        let hasChosen = false;
         for (let session of sessionsList){
             const option = document.createElement("option");
             option.textContent = session['sessionName'];
             option.value = student + '@' + session['sessionName'] + '@' + sessionTime;
             if (session['sessionName'] === chosenSession){
                 option.selected = true;
+                hasChosen = true;
             }
             dropdown.appendChild(option);
+        }
+
+        // empty option
+        if (chosenSession.trim() === ''){
+            const option = document.createElement("option");
+            option.textContent = ""
+            option.value = student + '@' + ' ' + '@' + sessionTime;
+            option.selected = true;
+            dropdown.appendChild(option)
         }
         dropdown.addEventListener("change", function(){
             console.log(this.value);
@@ -116,6 +166,8 @@
         })
         return dropdown;
     }
+
+
 
     function sendRequest(target, action, value="") {
         console.log("making request")
