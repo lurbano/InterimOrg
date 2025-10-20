@@ -9,6 +9,10 @@
             display: grid;
             grid-template-columns: 200px repeat(5, 200px);
         }
+        #facultyArea {
+            display: grid;
+            grid-template-columns: 300px auto;
+        }
     </style>
 </head>
 <body>
@@ -86,10 +90,17 @@
                     // deviceTable.innerHTML = data['status'];
                     console.log("data[status]:", data["status"]);
                     console.log("isArray", Array.isArray(data["status"]))
+                    let facDiv = document.getElementById("facultyArea");
                     for (session in data["status"]){
                         let studentList = data["status"][session]
                         if (studentList.length > 0) {
                             console.log(session, studentList);
+                            let sesDiv = document.createElement("div");
+                            sesDiv.innerHTML = session;
+                            facDiv.appendChild(sesDiv);
+                            let stuDiv = document.createElement("div");
+                            stuDiv.innerText = studentList;
+                            facDiv.appendChild(stuDiv);
                         }
                         
                     }
