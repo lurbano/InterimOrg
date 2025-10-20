@@ -71,11 +71,12 @@ class sessionDB:
         self.db = TinyDB(db_path+fname)
         print("DB file:", db_path+fname)
         
-    def add_session(self, sessionName, faculty="", location=""):
+    def add_session(self, sessionName, faculty="", studentLead="", location=""):
         print(" inserting ", sessionName)
         id = self.db.insert({
                 'sessionName': sessionName,
                 'faculty': faculty,
+                'studentLead': studentLead,
                 'location': location
             }
         )
@@ -106,9 +107,19 @@ def setupStudents():
 
 def setupSessions():
     db = sessionDB()
-    sessions = ["Makerspace", "Cooking", "Field Trips", "College Visits"]
-    for session in sessions:
-        db.add_session(session)
+    with open("sessions.txt") as f:
+        sessions = f.readlines()
+    # sessions = ["Makerspace", "Cooking", "Field Trips", "College Visits"]
+    for session in sessions[1:]:
+        print("session:", session)
+        data = session.split(",")
+        print("data:", data)
+        if (len(data) >= 4):
+            ses = data[0].strip()
+            faculty = data[1].strip()
+            studentLead = data[2].strip()
+            location = data[3].strip()
+            db.add_session(ses, faculty, studentLead, location)
 
 
 if __name__ == '__main__':

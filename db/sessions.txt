@@ -1,0 +1,19 @@
+Session, Faculty, Student Lead, Location
+Makerspace, Urbano, ,Makerspace
+Cooking, , Trinity, Dining Room
+Field Trips, Mrs. Bryan, Thomas, Off Campus
+Geology, Urbano, Bodhi, Dining Room 
+Stop Motion, Mr. Deutsch, Kyle, Art Room 
+Art, Mr. Deutsch, , Art Room 
+Community Service, Mrs. Douglass, Bodhi, Around Campus 
+Movie Making, Urbano, Maggie, Dining Room 
+Movie Watching, Mrs. Bryan, Laya, Mrs. Bryan's Room
+College Prep, Mr. Mitchell, , Mr. Mitchell's Room 
+College Trips, Mr. Mitchell, , Off Campus
+Car Care, Mrs. Bellchamber, Oliver L., Back Parking Lot 
+Lego Robotics, , Oliver D., Dining Room 
+XRP Rototics, Urbano, Sophia, Dining Room 
+Animal Life, Mr. Mitchell, Collier, Mr. Mitchell's Room 
+Animals, Mrs. Mertz, Miriam, Around Campus 
+
+
