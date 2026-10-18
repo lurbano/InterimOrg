@@ -13,6 +13,16 @@
             display: grid;
             grid-template-columns: 300px auto;
         }
+        .gridTable{
+            display:grid;
+            grid-template-columns: repeat(6, 200px);
+            border: 1px solid red;
+            margin: 5px;
+        }
+        .gridCell{
+            border: 1px solid black;
+            padding: 2px;
+        }
     </style>
 </head>
 <body>
@@ -20,6 +30,8 @@
     <div id="headArea"></div>
 
     <div id ="facultyArea"></div>
+
+    <div id="tableArea"></div>
 
     <div id = "sessionsArea">
         Session Name: <input type="text"  id="sessionName"><br>
@@ -91,10 +103,10 @@
                     console.log("data[status]:", data["status"]);
                     console.log("isArray", Array.isArray(data["status"]))
                     let facDiv = document.getElementById("facultyArea");
-                    for (session in data["status"]){
+                    for (let session in data["status"]){
                         let studentList = data["status"][session]
                         if (studentList.length > 0) {
-                            console.log(session, studentList);
+                            //console.log(session, studentList);
                             let sesDiv = document.createElement("div");
                             sesDiv.innerHTML = session;
                             facDiv.appendChild(sesDiv);
@@ -104,6 +116,101 @@
                         }
                         
                     }
+                    let sessionTable = "";
+                    let tableDiv = document.getElementById("tableArea");
+                    let currentSession = "";
+                    for (let session in data["status"]){
+                        let s = session.split("@");
+                        let thing = s[0];
+                        let d = s[1].split("_");
+                        let thingDay = d[0];
+                        let row = 0;
+                        let col = 0;
+                        switch (thingDay){
+                            case 'Monday': 
+                                col = 2;
+                                break;
+                            case "Tuesday":
+                                col = 3;
+                                break
+                            case "Wednesday":
+                                col = 4;
+                                break
+                            case "Thursday":
+                                col = 5;
+                                break
+                            case "Friday":
+                                col = 6;
+                                break
+                        }
+
+                        let thingTime = d[1];
+                        switch (thingTime){
+                            case "AM": 
+                                row = 2;
+                                break;
+                            case "PM": 
+                                row = 3;
+                                break;
+                        }
+
+                        if (currentSession !== thing){
+                            currentSession = thing;
+                        //table
+                            console.log("making table ...")
+                            sessionTable = document.createElement('div');
+                            sessionTable.id = "sessionTable";
+                            sessionTable.classList.add("gridTable");
+                            tableDiv.appendChild(sessionTable);
+
+
+                            let c = document.createElement("div");
+                            c.innerHTML = thing;
+                            sessionTable.appendChild(c);
+                            c = document.createElement("div");
+                            c.innerHTML = "Monday";
+                            c.classList.add("gridCell");
+                            sessionTable.appendChild(c);
+                            c = document.createElement("div");
+                            c.innerHTML = "Tuesday";
+                            c.classList.add("gridCell");
+                            sessionTable.appendChild(c);
+                            c = document.createElement("div");
+                            c.innerHTML = "Wednesday";
+                            c.classList.add("gridCell");
+                            sessionTable.appendChild(c);
+                            c = document.createElement("div");
+                            c.innerHTML = "Thursday";
+                            c.classList.add("gridCell");
+                            sessionTable.appendChild(c);
+                            c = document.createElement("div");
+                            c.innerHTML = "Friday";
+                            c.classList.add("gridCell");
+                            sessionTable.appendChild(c);
+
+                            c = document.createElement("div");
+                            c.innerHTML = "AM";
+                            c.style.gridArea = `2 / 1`;
+                            sessionTable.appendChild(c);
+
+                            c = document.createElement("div");
+                            c.innerHTML = "PM";
+                            c.style.gridArea = `3 / 1`;
+                            sessionTable.appendChild(c);
+
+                        }
+                        
+                        //console.log("stuDiv:", thing, thingDay, `|${thingTime}|`, row, col);
+                        let stuDiv = document.createElement("div");
+                        stuDiv.innerHTML = data["status"][session].join(", ");
+                        stuDiv.style.gridArea = `${row} / ${col}`;
+                        stuDiv.classList.add("gridCell");
+                        sessionTable.appendChild(stuDiv);
+
+                    }
+
+                    
+
                 }
 
                 if (data["item"] == "everything") {
